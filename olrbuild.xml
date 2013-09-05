@@ -1,0 +1,290 @@
+<project name="Clarify" default="build.olr.full" basedir=".">
+    <description>
+        Build file for the OLR Application
+    </description>
+  <!-- set global properties for this build -->
+  <property file="olr.properties"/>
+  
+  <property name="DOMAIN.BASE.DIR" location="${WEBLOGIC_DOMAIN}"/>
+  <property name="DOMAIN.CLARIFY.BASE.DIR" location="${DOMAIN.BASE.DIR}/applications/clarify"/>
+  <property name="DOMAIN.CLARIFY.BIN.DIR" location="${DOMAIN.CLARIFY.BASE.DIR}/bin"/>
+  <property name="DOMAIN.CLARIFY.JSP.DIR" location="${DOMAIN.CLARIFY.BASE.DIR}/jsp"/>
+  <property name="DOMAIN.CLARIFY.CLASSES.DIR" location="${DOMAIN.CLARIFY.JSP.DIR}/Clarify/agent/en/WEB-INF/classes"/>
+  
+  <property name="CLARIFY.BASE.DIR" location="${CLARIFY_WORKSPACE}"/>
+  <property name="CLARIFY.BIN.DIR" location="${CLARIFY.BASE.DIR}/bin"/>
+  <property name="CLARIFY.JSP.DIR" location="${CLARIFY.BASE.DIR}/jsp"/>
+  <property name="CLARIFY.ENV.DIR" location="${CLARIFY.BASE.DIR}/env"/>
+  <property name="CLARIFY.SRC.DIR" location="${CLARIFY.BASE.DIR}/classes"/>
+  <property name="COMPILE.LIB.CLARIFY.DIR" location="${CLARIFY.JSP.DIR}/Clarify/agent/en/WEB-INF/lib"/>
+  
+  <property name="OLR.BASE.DIR" location="${OLR_WORKSPACE}"/>
+  <property name="OLR.SRC.DIR" location="${OLR.BASE.DIR}/src"/>
+  <property name="OLR.WSSRC.DIR" location="${OLR.BASE.DIR}/src/com/ncsi/olr/webservice"/>
+  <property name="OLR.WSPROPERTY.DIR" location="${OLR.BASE.DIR}/src/com/ncsi/olr/webservice/property"/>
+  <property name="OLR.SERVERCONFIG.DIR" location="${OLR.BASE.DIR}/serverconfig"/>
+	
+  <property name="OLRTESTCLIENT.BASE.DIR" location="${OLR_TESTCLIENT_WORKSPACE}"/>
+  <property name="OLRTESTCLIENT.SRC.DIR" location="${OLRTESTCLIENT.BASE.DIR}/src"/>	
+  
+  <property name="TEMP.DIR" location="${OLR.BASE.DIR}/temp"/>
+  <property name="TEMP.CLARIFY.DIR" location="${CLARIFY.BASE.DIR}/temp/clarify"/>
+  <property name="TEMP.CLARIFY.STAGING.DIR" location="${TEMP.CLARIFY.DIR}/staging"/>
+  <property name="TEMP.CLARIFY.WEBSERVICESTAGING.DIR" location="${TEMP.CLARIFY.DIR}/webservicestaging"/>
+  <property name="TEMP.CLARIFY.CLASSES.DIR" location="${TEMP.CLARIFY.STAGING.DIR}/classes"/>
+  
+  
+  <property name="TEMP.OLR.DIR" location="${TEMP.DIR}/olr"/>
+  <property name="TEMP.OLR.STAGING.DIR" location="${TEMP.OLR.DIR}/staging"/>
+  <property name="TEMP.OLR.JARSTAGING.DIR" location="${TEMP.OLR.DIR}/jarstaging"/>
+  <property name="TEMP.OLR.EARSTAGING.DIR" location="${TEMP.OLR.DIR}/earstaging"/>
+  <property name="TEMP.OLR.WARSTAGING.DIR" location="${TEMP.OLR.DIR}/warstaging"/>
+  <property name="TEMP.OLR.CLASSES.DIR" location="${TEMP.OLR.STAGING.DIR}/classes"/>
+  <property name="TEMP.OLR.WSPROPERTY.DIR" location="${TEMP.OLR.STAGING.DIR}/classes/com/ncsi/olr/webservice/property"/>
+	
+  <property name="TEMP.OLRTESTCLIENT.DIR" location="${TEMP.DIR}/testclient"/>
+  <property name="TEMP.OLRTESTCLIENT.STAGING.DIR" location="${TEMP.OLRTESTCLIENT.DIR}/staging"/>
+  <property name="TEMP.OLRTESTCLIENT.CLASSES.DIR" location="${TEMP.OLRTESTCLIENT.STAGING.DIR}/classes"/>	
+  <property name="TEMP.OLRTESTCLIENT.JARSTAGING.DIR" location="${TEMP.OLRTESTCLIENT.STAGING.DIR}/jarstaging"/>	
+  
+  <property name="OLR.DEPLOY.DIR" location="${OLR_WORKSPACE}/deploy"/>
+  <property name="OLR.DEPLOY.EAR.DIR" location="${OLR.DEPLOY.DIR}/app"/>
+  <property name="OLR.DEPLOY.CLIENT.DIR" location="${OLR.DEPLOY.DIR}/clients"/>
+  
+  <path id="CLASSPATH">
+   
+       <pathelement location="."/>
+       <pathelement location="${TEMP.OLR.CLASSES.DIR}"/>
+   
+	     <pathelement location="${WEBLOGIC.HOME}/server/lib/weblogic.jar"/>
+	     <pathelement location="${WEBLOGIC.HOME}/server/lib/webserviceclient.jar"/>
+	     <pathelement location="${WEBLOGIC.HOME}/server/lib/wlsqlserver.jar"/>
+	     <pathelement location="${WEBLOGIC.HOME}/server/lib/ojdbc14.jar"/>	     
+	
+       <fileset dir="${COMPILE.LIB.CLARIFY.DIR}" />
+  	   <fileset dir="${OLR.BASE.DIR}/lib" />
+  	
+	
+	</path>
+	
+	  <path id="TESTCLIENTCLASSPATH">
+	   
+	       <pathelement location="."/>
+	   
+		     <pathelement location="${WEBLOGIC.HOME}/server/lib/weblogic.jar"/>
+		     <pathelement location="${WEBLOGIC.HOME}/server/lib/webserviceclient.jar"/>
+		     <pathelement location="${WEBLOGIC.HOME}/server/lib/wlsqlserver.jar"/>
+		     <pathelement location="${WEBLOGIC.HOME}/server/lib/ojdbc14.jar"/>	  
+	  		 <pathelement location="${OLR.DEPLOY.CLIENT.DIR}/webservice_client_dev.jar"/>
+		
+	
+		</path>
+	
+	<property name="CLASSPATH" refid="CLASSPATH" />
+	<property name="TESTCLIENTCLASSPATH" refid="TESTCLIENTCLASSPATH" />
+  
+  <target name="build.clarify.mkdir" depends="build.olr.clean">
+    <mkdir dir="${TEMP.CLARIFY.DIR}"/>
+    <mkdir dir="${TEMP.CLARIFY.STAGING.DIR}"/>
+    <mkdir dir="${TEMP.CLARIFY.CLASSES.DIR}"/>    
+    <mkdir dir="${OLR.APP.EAR.DIR}"/>
+    <mkdir dir="${OLR.APP.EAR.DIR}"/>
+  </target>
+  
+  <target name="build.olr.mkdir" depends="build.olr.clean">
+    <mkdir dir="${TEMP.OLR.DIR}"/>
+    <mkdir dir="${TEMP.OLR.STAGING.DIR}"/>
+  	<mkdir dir="${TEMP.OLR.JARSTAGING.DIR}"/>  	
+  	<mkdir dir="${TEMP.OLR.EARSTAGING.DIR}"/>
+  	<mkdir dir="${TEMP.OLR.WARSTAGING.DIR}"/>
+    <mkdir dir="${TEMP.OLR.CLASSES.DIR}"/>
+    <mkdir dir="${OLR.DEPLOY.DIR}"/>
+    <mkdir dir="${OLR.DEPLOY.EAR.DIR}"/>
+    <mkdir dir="${OLR.DEPLOY.CLIENT.DIR}"/>
+  	<mkdir dir="${TEMP.OLR.WSPROPERTY.DIR}"/>
+  	<mkdir dir="${TEMP.OLRTESTCLIENT.DIR}"/>
+  	<mkdir dir="${TEMP.OLRTESTCLIENT.STAGING.DIR}"/>
+  	<mkdir dir="${TEMP.OLRTESTCLIENT.CLASSES.DIR}"/>
+  	<mkdir dir="${TEMP.OLRTESTCLIENT.JARSTAGING.DIR}"/>	
+  </target>
+  
+  <target name="buildinfo">
+  	<echo>
+  	---------------------------------------------------------------------
+  			Project Name  : OLR - IRequest
+  			Author        : Paul Panjikaran
+  			Build version : 0.2 Exploded Format
+  			Created Date  : 11 Oct 2011
+  			Modified Date : 24 Nov 2011 
+  	---------------------------------------------------------------------
+  	</echo>
+  </target>
+  
+  <target name="build.olr.full" depends="buildinfo, build.olr.compile, olr.webserviceGen, olr.jar, olr.copy, olr.war, olr.ear, olr.deploy.ear">
+      
+  </target>  
+	
+	<target name="olr.jar" depends="olr.webserviceGen, build.olr.compile">
+	
+		<delete file="${TEMP.OLR.JARSTAGING.DIR}/irequestws.jar"/>
+		
+		<copy todir="${TEMP.OLR.WSPROPERTY.DIR}">
+					<fileset dir="${OLR.WSPROPERTY.DIR}">
+					</fileset>
+				</copy>
+		
+		<jar jarfile="${TEMP.OLR.JARSTAGING.DIR}/irequestws.jar"
+			manifest="${OLR.SERVERCONFIG.DIR}/jarconfig/Manifest.mf"
+			basedir="${TEMP.OLR.CLASSES.DIR}"
+			excludes="**/IRequestWebService.class"			
+			compress="true">
+		</jar>
+	
+	</target>
+	
+    <target name="olr.ear" depends="olr.jar">
+
+	<ear earfile="${TEMP.OLR.EARSTAGING.DIR}/IRequestWebService.ear"
+		appxml="${OLR.SERVERCONFIG.DIR}/earconfig/application.xml"
+		manifest="${OLR.SERVERCONFIG.DIR}/earconfig/Manifest.mf"
+		compress="false">
+		<!--<fileset dir="${TEMP.OLR.JARSTAGING.DIR}" />-->
+		<fileset dir="${TEMP.OLR.WARSTAGING.DIR}">
+				<include name="irequestws.war"/>
+		</fileset>
+	</ear>
+    </target>	
+	
+	<target name="olr.copy" depends="olr.jar, olr.webserviceGen">
+		<unzip src="${TEMP.OLR.EARSTAGING.DIR}/IRequestWebService.ear" dest="${TEMP.OLR.EARSTAGING.DIR}" />
+		<move todir="${TEMP.OLR.WARSTAGING.DIR}">
+			<fileset dir="${TEMP.OLR.EARSTAGING.DIR}">
+				<include name="irequestws.war"/>
+			</fileset>
+		</move>
+	</target>
+	
+	<target name="olr.war" depends="olr.copy">
+		<unzip src="${TEMP.OLR.WARSTAGING.DIR}/irequestws.war" dest="${TEMP.OLR.WARSTAGING.DIR}" />
+		<copy todir="${TEMP.OLR.WARSTAGING.DIR}/WEB-INF">
+			<fileset dir="${OLR.SERVERCONFIG.DIR}/warconfig">
+				<include name="weblogic.xml"/>
+			</fileset>
+		</copy>
+		<war destfile="${TEMP.OLR.WARSTAGING.DIR}/irequestws.war"
+			update="true"
+			webxml="${OLR.SERVERCONFIG.DIR}/warconfig/web.xml"
+			manifest="${TEMP.OLR.WARSTAGING.DIR}/META-INF/Manifest.mf"
+			compress="true">
+			<lib dir="${TEMP.OLR.JARSTAGING.DIR}">
+			</lib>
+			<classes dir="${TEMP.OLR.WARSTAGING.DIR}/WEB-INF/classes"/>
+			<fileset dir="${TEMP.OLR.WARSTAGING.DIR}">
+				<include name="WEB-INF/weblogic.xml"/>
+			</fileset>
+		</war>
+	</target>
+	
+	<target name="olr.deploy.ear" depends="olr.ear">
+		<copy todir="${OLR.DEPLOY.EAR.DIR}">
+			<fileset dir="${TEMP.OLR.EARSTAGING.DIR}">
+				<include name="IRequestWebService.ear"/>
+			</fileset>
+		</copy>
+	</target>
+
+  <target name="build.clarify.compile" depends="buildinfo, build.clarify.mkdir">
+    <javac  srcdir="${CLARIFY.WSSRC.DIR}" 
+            destdir="${TEMP.CLARIFY.CLASSES.DIR}"
+            classpath="${CLASSPATH}"
+	          deprecation="on"
+	          nowarn="off"
+	          debug="on"
+	          memoryInitialSize="200m"
+	          memoryMaximumSize="400m"
+	          fork="true"/>
+  </target>
+
+	<target name="olr.webserviceGen" >
+	<echo message = "${CLASSPATH}" />
+ 		<servicegen
+ 		   classpath="${CLASSPATH}"
+ 		   destEar="${TEMP.OLR.EARSTAGING.DIR}/IRequestWebService.ear"
+       	   warName="irequestws.war"       
+		   contextURI="ClarifyCRM/irequestwebservice/irequestws" >
+		<service		   
+		   javaClassComponents="com.ncsi.olr.webservice.IRequestWebService"
+			 targetNamespace="ClarifyCRM/irequestwebservice/irequestws"
+			 serviceName="irequestws"
+			 serviceURI="/irequestws"
+			 generateTypes="True"
+			 expandMethods="True"
+			 style="rpc" >			 
+		</service> 
+		 </servicegen>
+
+	 </target>
+	 
+	 <target name="olr.clientgen">
+	 <clientgen wsdl="C:\Paul\PROJECTS\OLR\deploy\clients\irequestws.wsdl"
+           packageName="com.ncsi.olr.webservice"
+           overwrite="true"
+           clientJar="${OLR.DEPLOY.CLIENT.DIR}/webservice_client.jar"/> 	
+    </target>
+	
+	 <target name="olr.clientgendev">
+	 <clientgen wsdl="C:\Paul\Work\20110926_DC_Ops_Robot\sources\20111117\IRequest.wsdl"
+          packageName="com.ncsi.olr.webservice"
+          overwrite="true"
+          clientJar="${OLR.DEPLOY.CLIENT.DIR}/webservice_client_dev.jar"/>
+   </target>
+     
+    <target name="build.olr.compile" depends="buildinfo, build.olr.mkdir">
+    <javac  srcdir="${OLR.WSSRC.DIR}" 
+            destdir="${TEMP.OLR.CLASSES.DIR}"
+            classpath="${CLASSPATH}"
+	          deprecation="on"
+	          nowarn="off"
+	          debug="on"
+	          memoryInitialSize="200m"
+	          memoryMaximumSize="400m"
+	          fork="true"/>
+  </target>
+  
+  <target name="build.olr.clean">
+    <delete dir="${TEMP.DIR}" quiet="true" />
+    <delete dir="${OLR.DEPLOY.EAR.DIR}" quiet="true" />
+  </target>
+	
+	<target name="olrtestclient.jar" depends="build.olrtestclientcompile">
+
+		<delete file="${OLR.DEPLOY.CLIENT.DIR}/irequestws_testclient.jar"/>
+		
+		<jar destfile="${TEMP.OLRTESTCLIENT.JARSTAGING.DIR}/irequestws_testclient.jar"
+			manifest="${OLR.SERVERCONFIG.DIR}/testclientjarconfig/Manifest.mf"
+			basedir="${TEMP.OLRTESTCLIENT.CLASSES.DIR}"
+			compress="true">
+		</jar>
+		
+		<copy todir="${OLR.DEPLOY.CLIENT.DIR}">
+					<fileset dir="${TEMP.OLRTESTCLIENT.JARSTAGING.DIR}">
+						<include name="irequestws_testclient.jar"/>
+					</fileset>
+		</copy>
+	
+	</target>	
+	
+	<target name="build.olrtestclientcompile" depends="build.olr.mkdir">
+	<echo message = "${TESTCLIENTCLASSPATH}" />
+    <javac  srcdir="${OLRTESTCLIENT.SRC.DIR}" 
+            destdir="${TEMP.OLRTESTCLIENT.CLASSES.DIR}"
+            classpath="${TESTCLIENTCLASSPATH}"
+	          deprecation="on"
+	          nowarn="off"
+	          debug="on"
+	          memoryInitialSize="200m"
+	          memoryMaximumSize="400m"
+	          fork="true"/>
+	</target>
+
+</project>
